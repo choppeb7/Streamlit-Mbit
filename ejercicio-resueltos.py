@@ -63,7 +63,7 @@ if ejercicio==2:
             data_jsn=requests.get(url_poke_ind).json()
             image_pokex=data_jsn["sprites"]["front_default"]
 
-            poke_dic.append({"id":[x], "name":i["name"], "image":f"st.image('{image_pokex}')", "check":None})
+            poke_dic.append({"id":[x], "name":i["name"], "image":image_pokex, "check":None})
             x=x+1
         df_pokedex_matrix=pd.json_normalize(poke_dic)
         return df_pokedex_matrix
@@ -113,7 +113,11 @@ if ejercicio==2:
 
     with tab1:
         st.header("Todos los pokemon")
-        st.dataframe(matrix_pokemon())
+        st.dataframe(matrix_pokemon(),column_config={
+        "image": st.column_config.ImageColumn("image", help="Vista previa", width="small")
+        },
+        hide_index=True,
+        use_container_width=True)
     
     with tab2:
         st.header("Archivos")
