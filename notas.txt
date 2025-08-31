@@ -1,0 +1,188 @@
+st.DataFrame(df)
+st.data_editor(df)--> lapiz
+
+
+selectores unicos
+st.selectbox()
+st.radio("titulo", [List de opciones, index="valor inicial")
+st.select_slider("titulo", [List de opciones, index="valor inicial")
+
+selectores multiples
+st.multiselect(("titulo", [List de opciones, list de valores iniciales ")
+)
+
+elementos  de interaccion:
+st.number_input("introduce el num.....,  min_val=, max_value=, step= , value=  ):
+
+st.text_input("introduce el tex.....,):
+st.text_area("introduce el tex",  height= , maxchar=):
+
+
+elementos de subida de ficheros:
+
+ficherosasubir=st.file_uploader("sadfhgf.csv", accept_multiple_files=True)
+for i in ficheros_subir:
+	st.write(i.name)
+	st.dataframe(Pd.read_csv(i))
+
+date-input:
+import datetime
+fecha=st.date_input("se creo en la fecha", datetime.date(2000,1,1), min-value-date=, max-value=..)
+
+if
+
+elif
+
+else
+
+elementos de interaccion visual:
+
+st.image()
+st.audio()
+st.video()
+
+Elementos de interaccion de carga:
+
+St.spinner()
+import time
+
+with st.spinner("Wait for it..", show_time=True):
+	time.sleep(5)
+
+Elementos de interacción botones:
+st.button("hola")
+
+
+Streamlit soporta múltiples bibliotecas para graficas :
+altair
+plotply
+bokeh
+matplotlib
+seaborn
+
+datosgraficos=pd.fataframe(np.random.randn(20,3),columns=["a", "b", c"
+
+
+Crear un array de 20 filas y 3 columnas)
+
+
+st.line_chart():
+st.bar_chart():
+st.map():
+
+DIAGRAMA DE BURBUJAS ALTAIR:
+
+st.altair_chart():
+
+df=Pd.dataframe(np.random.randn(20,3), columns=[…)
+
+c=alt.chart(df).mark_circle().encode(x="a", y="b", size="c", color="c", tooltip=["A", "b"...
+
+st.altair_chart(c, use_container_wi…)
+
+DIAGRAMA DE DIST. NORMAL MATPLOTLIB:
+
+graficos de tercero plotly
+st.plotly_char():
+x1=np.random.randn(200) -2
+x20=np.random.randn(200)
+ 
+HIST_DATA=[X1, X2
+
+
+Group_labels=["Grupo1", "Grupo...
+
+fig=ff.create_distplot(HIST_DATA, Group_labels, bin_size=[.1, -24, .5
+st.plotly_chart(fig, use...)
+
+DIAGRAMA DE TORTA MATPLOTLIB:
+
+import matplotlib.pyplot as plt
+labels=
+sizes=[15, 45, 40
+
+fig, ax= plt.subplots()
+tarta=ax.pie(sizes, labels=labels)
+
+st.pyplot(fig)
+ 
+HISTOGRAMA MATPLOTLIB:
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+arr=np.random.normal(1,1, size=100)
+fig, ax= plt.subplots()
+ax.hist(arr, bins=20)
+
+st.pyplot(fig)
+
+ALMACENAMIENTO DE VARIABLES EN DICCIONARIO
+
+ST.session_state{
+
+todos los elemento st se les puede asignar una clave para que queden guardadas en el elemento
+diccionario st.session_state
+
+por ejemplo:
+
+st.slider("selecciona...", [1,2,3,4..., key="slider_euros"
+st.slider("selecciona...", 0, 100, 50, key="slider_euros
+
+if st.sessio_state.slider_euros <=10 :
+	st.write("....
+
+con st.write(st.session_state) se imprimen el valor de cada clave del diccionario
+
+un refresh nos hace perder nuestra información en la variable global
+
+
+Como podemos hacer para  que mi variable persista siempre en el tiempo independientemente de que le de refresh al streamlit
+
+if "slider_euros" not in st.session_state:
+	st.session_state.slider_euros=100;
+
+BORRAR TODAS LAS CLAVES EN  SESSION STATE
+	for i in st.session_state.keys():
+	del st.session_state.i
+
+CACHEO PARA EVITAR CONSUMOS CONSTANTES DE RECURSO:
+
+
+Para cachear información obtenida por funciones:
+@st.cache_data(API CALLS, dataframes, Python 
+@st.cache_resource(database_connections , ML_MODELS)
+
+CADA VEZ QUE TOCO UNA VARIABLE SE REEJECUTA EL SCRIPT 
+
+
+def load_data(url):
+	df=Pd.read_csv(url)
+	return df;
+df=load("hdfgfg.csv")
+st.button("rerun")
+
+@st.cache_ data
+def load_data(url):
+	df=Pd.read_csv(url)
+	return df;
+df=load("hdfgfg.csv")
+st.button("rerun")
+
+
+Como postear el dataframe de una función que hace una consulta a un API y devuelve un json()
+
+@st.cache_data(ttl=3600)#1 hour 3600 seg, timr to live 
+def obten_post(num_post)
+	x=num_post
+	r=requests.get(f"url{x..).json()
+	return r
+
+st.Dataframe(obten_post(5))
+
+meter un contador en una función cacheada en streamlit para ver en efecto el cacheo de esa función 
+
+Tomando en consideración que el cacheo aplica únicamente cdo el valor del input es igual
+
+eliminar todos los datos cacheados 
+fetch_and_clean_data.clear()

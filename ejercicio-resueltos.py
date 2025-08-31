@@ -27,6 +27,36 @@ if ejercicio==1:
     
     
 if ejercicio==2:
+
+    ##cachear todos los pokemon
+    @st.cache
+    def matrix_pokemon():
+        max=50
+        url=f"https://pokeapi.co/api/v2/pokemon/?limit={max}"
+        r=requests.get(url)
+        poke_json=r.json()
+        results=poke_json["results"]
+        poke_dic=[]
+        x=1
+        for i in results:
+            url_poke_ind=f"https://pokeapi.co/api/v2/pokemon/{x}"
+            data_jsn=requests.get(url_poke_ind).json()
+            image_pokex=data_jsn["sprites"]["front_default"]
+
+            poke_dic.append({"id":[x], "name":i["name"], "image":image_pokex, "check":False})
+            x=x+1
+        df_pokedex_matrix=pd.json_normalize(poke_dic)
+        return df_pokedex_matrix
+    
+    if "matrix_editor" not in st.session_state:
+        st.session_state["matrix_editor"]= matrix_pokemon()
+
+    def actualizar_datos(x):
+         st.session_state["matrix_editor"]=x
+
+
+
+
     st.header("Ejercicio 2");
     pokemon_id=st.sidebar.number_input("seleccionar id de Pokemon",min_value=1, max_value=1302, step=1)
     url=f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}/"
@@ -47,27 +77,7 @@ if ejercicio==2:
         list_abilities.append(x)
     ## Extraemos audio
     poke_audio=json_pokemon["cries"]["legacy"]
-
-    ##cachear todos los pokemon
-    @st.cache
-    def matrix_pokemon():
-        max=50
-        url=f"https://pokeapi.co/api/v2/pokemon/?limit={max}"
-        r=requests.get(url)
-        poke_json=r.json()
-        results=poke_json["results"]
-        poke_dic=[]
-        x=1
-        for i in results:
-            url_poke_ind=f"https://pokeapi.co/api/v2/pokemon/{x}"
-            data_jsn=requests.get(url_poke_ind).json()
-            image_pokex=data_jsn["sprites"]["front_default"]
-
-            poke_dic.append({"id":[x], "name":i["name"], "image":image_pokex, "check":None})
-            x=x+1
-        df_pokedex_matrix=pd.json_normalize(poke_dic)
-        return df_pokedex_matrix
-
+    
 
 
 
@@ -113,14 +123,46 @@ if ejercicio==2:
 
     with tab1:
         st.header("Todos los pokemon")
-        st.dataframe(matrix_pokemon(),column_config={
-        "image": st.column_config.ImageColumn("image", help="Vista previa", width="small")
+        disabled_cols=[c for c in st.session_state["matrix_editor"] if c!="check"]
+        df_editado=st.data_editor(
+                    st.session_state["matrix_editor"],
+                       column_config={
+                            "image": st.column_config.ImageColumn("image", help="Vista previa", width="small"),
+                            "check": st.column_config.CheckboxColumn("check")
         },
+        disabled=disabled_cols,
         hide_index=True,
-        use_container_width=True)
+        use_container_width=True,
+        key="pokedex_editor"
+        )
+        guardar =st.button("Guardar cambios", key="guardar_pokedex")
+        if guardar ==True:
+            actualizar_datos(df_editado)
+            st.rerun()
+        st.write(f"has visto una cantidad de {sum(st.session_state['matrix_editor']['check'])}")
+
+        
+
+
+
+
     
     with tab2:
-        st.header("Archivos")
+        st.header("Cargar archivo Excel")
+        upload_file=st.file_uploader("Sube tu archivo csv", type=["csv"])
+        if upload_file is not None:
+        # Si es CSV
+            new_data = pd.read_csv(upload_file)
+
+            if set(new_data.columns) == set(st.session_state["matrix_editor"].columns):
+                st.session_state["matrix_editor"] = new_data
+                st.success("Datos cargados exitosamente")
+
+            # Recomiendo quitar st.rerun() si quieres mostrarlo aquí
+                st.dataframe(st.session_state["matrix_editor"])
+                
+        else:
+            st.error("Las columnas no coinciden con la matriz actual")
     
     with tab3:
         st.header("⚙️ Configuración")
