@@ -168,7 +168,53 @@ if ejercicio==2:
         st.header("⚙️ Configuración")
 
 if ejercicio==3:
-    st.header("Ejercicio 3");
+
+    st.header("Ejercicio 3")
+    min=st.sidebar.number_input("Filtro valor minimo de poblacion",step=10000, min_value=100000, max_value=10000000000)
+    max=st.sidebar.number_input("Filtro valor max de poblacion",step=1000000, min_value=1000000, max_value=10000000000)
+    
+    @st.cache_data
+    def seleccion(x): 
+        url_selected=f"https://restcountries.com/v3.1/name/{x}"
+        data_pais=requests.get(url_selected)
+        json_pais=data_pais.json
+        df_pais=pd.json_normalize(json_pais)
+        return df_pais
+    
+    @st.cache_data
+    def matrix_paises():
+        url="https://restcountries.com/v3.1/independent?status=true&fields=languages,capital,region,languages,population,name"
+        data=requests.get(url)
+        data_json=data.json()
+        df=pd.json_normalize(data_json)
+        return df
+
+    if "data_df" not in st.session_state:
+       st.session_state["data_df"]=matrix_paises()
+
+    df=st.session_state["data_df"]
+    df_paises_filtrados=df.loc[(df["population"] >= min)&(df["population"] < max), :]
+    
+    # def actualizar(df):
+    #     st.session_state["data_df"]=df
+
+    st.dataframe(df_paises_filtrados)
+    st.info(f"Hay una cantidad igual a {len(df_paises_filtrados)} de paises con una poblacion entre {min} y {max}")
+    
+
+    @st.cache_data
+    def seleccion(x): 
+        url_selected=f"https://restcountries.com/v3.1/name/{x}"
+        data_pais=requests.get(url_selected)
+        json_pais=data_pais.json()
+        df_pais=pd.json_normalize(json_pais)
+        return df_pais
+    lista_paises=matrix_paises()["name.common"].tolist()
+    pais=st.selectbox("Selecciona un pais",lista_paises)
+    st.dataframe(seleccion(pais))
+
+   
+    
 
 if ejercicio==4:
     st.header("Ejercicio 4");
